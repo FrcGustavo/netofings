@@ -1,0 +1,23 @@
+{
+    "name": "netofingsdb",
+    "version": "1.0.0",
+    "description": "A simple iot platform",
+    "main": "index.js",
+    "scripts": {
+        "lint": "standard"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/FranciscoGustavo/netofings"
+    },
+    "keywords": [],
+    "author": "FrcGustavo",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/FranciscoGustavo/netofings/issues"
+    },
+    "homepage": "https://github.com/FranciscoGustavo/netofings#readme",
+    "devDependencies": {
+        "standard": "^14.3.1"
+    }
+}
