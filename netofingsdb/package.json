@@ -4,7 +4,7 @@
     "description": "A simple iot platform",
     "main": "index.js",
     "scripts": {
-        "test": "DEBUG=netofings:* ava tests/*-tests.js --verbose",
+        "test": "DEBUG=netofings:* nyc --reporter=lcov ava tests/*-tests.js --verbose",
         "setup": "DEBUG=netofings:* node setup.js",
         "lint": "standard"
     },
