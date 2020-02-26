@@ -27,6 +27,7 @@
         "chalk": "^3.0.0",
         "debug": "^4.1.1",
         "mosca": "^2.8.3",
+        "netofingsdb": "file:../netofingsdb",
         "redis": "^3.0.2"
     }
 }
