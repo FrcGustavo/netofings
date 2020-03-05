@@ -4,7 +4,7 @@ const debug = require('debug')('netofings:api:routes')
 const express = require('express')
 const asyncify = require('express-asyncify')
 const auth = require('express-jwt')
-
+const guard = require('express-jwt-permissions')()
 const db = require('netofingsdb')
 const config = require('./config')
 
@@ -69,7 +69,7 @@ api.get('/agent/:uuid', auth(config.auth), async (req, res, next) => {
   res.send(agent)
 })
 
-api.get('/metrics/:uuid', async (req, res, next) => {
+api.get('/metrics/:uuid', auth(config.auth), guard.check(['metrics:read']), async (req, res, next) => {
   const { uuid } = req.params
 
   debug(`request to /metrics/${uuid}`)
@@ -88,7 +88,7 @@ api.get('/metrics/:uuid', async (req, res, next) => {
   res.send(metrics)
 })
 
-api.get('/metrics/:uuid/:type', async (req, res, next) => {
+api.get('/metrics/:uuid/:type', auth(config.auth), async (req, res, next) => {
   const { uuid, type } = req.params
 
   debug(`request to /metrics/${uuid}/${type}`)
