@@ -1,0 +1,30 @@
+{
+    "name": "netofingsweb",
+    "version": "1.0.0",
+    "description": "A simple IoT platform",
+    "main": "index.js",
+    "scripts": {
+        "start": "NODE_ENV=production node server.js",
+        "start-dev": "DEBUG=netofings:* nodemon server.js",
+        "lint": "standard"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/FranciscoGustavo/netofings.git"
+    },
+    "author": "FrcGustavo",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/FranciscoGustavo/netofings/issues"
+    },
+    "homepage": "https://github.com/FranciscoGustavo/netofings#readme",
+    "dependencies": {
+        "chalk": "^3.0.0",
+        "debug": "^4.1.1",
+        "express": "^4.17.1"
+    },
+    "devDependencies": {
+        "nodemon": "^2.0.2",
+        "standard": "^14.3.1"
+    }
+}
