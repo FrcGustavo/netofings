@@ -20,7 +20,9 @@
     "dependencies": {
         "blessed": "^0.1.81",
         "blessed-contrib": "^4.8.19",
-        "minimist": "^1.2.0"
+        "minimist": "^1.2.0",
+        "moment": "^2.24.0",
+        "netofingsagent": "file:../netofingsagent"
     },
     "devDependencies": {
         "standard": "^14.3.1"
