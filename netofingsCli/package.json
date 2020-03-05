@@ -18,6 +18,8 @@
     },
     "homepage": "https://github.com/FranciscoGustavo/netofings#readme",
     "dependencies": {
+        "blessed": "^0.1.81",
+        "blessed-contrib": "^4.8.19",
         "minimist": "^1.2.0"
     },
     "devDependencies": {
