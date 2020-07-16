@@ -2,6 +2,10 @@ const debug = require('debug')('netofings:db:setup');
 const inquirer = require('inquirer');
 const db = require('./index');
 const handleFatalError = require('./utils/handleFatalError');
+const { info } = require('./utils/debug');
+const {
+  database, username, password, host, dialect,
+} = require('./config');
 
 const prompt = inquirer.createPromptModule();
 
@@ -16,23 +20,23 @@ async function setup() {
     });
 
     if (!answer.setup) {
-      return console.log('Nothing happened :)');
+      return info('Nothing happened :)');
     }
   }
 
   const config = {
-    database: process.env.DB_NAME,
-    username: process.env.DB_USER,
-    password: process.env.DB_PASS,
-    host: process.env.DB_HOST,
-    dialect: 'postgres',
+    database,
+    username,
+    password,
+    host,
+    dialect,
     logging: (s) => debug(s),
     setup: true,
   };
 
   await db(config).catch(handleFatalError);
 
-  console.log('Success!');
+  info('Success!');
   return process.exit(0);
 }
 

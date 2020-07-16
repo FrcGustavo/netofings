@@ -1,8 +1,9 @@
 const chalk = require('chalk');
+const { info } = require('./debug');
 
 const handleFatalError = (error) => {
-  console.error(`${chalk.red('[fatal error]')} ${error.message}`);
-  console.error(error.stack);
+  info(`${chalk.red('[fatal error]')} ${error.message}`);
+  info(error.stack);
   process.exit(1);
 };
 
