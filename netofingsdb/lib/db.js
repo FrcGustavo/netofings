@@ -1,10 +1,10 @@
-'use strict'
-const Sequelize = require('sequelize')
-let sequelize = null
+const Sequelize = require('sequelize');
 
-module.exports = function setupDatabase (config) {
+let sequelize = null;
+
+module.exports = function setupDatabase(config) {
   if (!sequelize) {
-    sequelize = new Sequelize(config)
+    sequelize = new Sequelize(config);
   }
-  return sequelize
-}
+  return sequelize;
+};
