@@ -1,13 +1,14 @@
 'use strct';
 
 const db = require('../index');
+const handleFatalError = require('../utils/handleFatalError');
 
 async function run() {
   const config = {
-    database: process.env.DB_NAME || 'netofings',
-    username: process.env.DB_USER || 'gusi',
-    password: process.env.DB_PASS || '123456',
-    host: process.env.DB_HOST || 'localhost',
+    database: process.env.DB_NAME,
+    username: process.env.DB_USER,
+    password: process.env.DB_PASS,
+    host: process.env.DB_HOST,
     dialect: 'postgres',
   };
 
@@ -44,12 +45,6 @@ async function run() {
   const metricsByType = await Metric.findByTypeAgentUuid('memory', agent.uuid).catch(handleFatalError);
   console.log('--metrics--');
   console.log(metricsByType);
-}
-
-function handleFatalError(error) {
-  console.error(error.message);
-  console.error(error.stack);
-  process.exit(1);
 }
 
 run();

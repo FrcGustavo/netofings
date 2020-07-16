@@ -1,7 +1,7 @@
 const debug = require('debug')('netofings:db:setup');
 const inquirer = require('inquirer');
-const chalk = require('chalk');
 const db = require('./index');
+const handleFatalError = require('./utils/handleFatalError');
 
 const prompt = inquirer.createPromptModule();
 
@@ -21,10 +21,10 @@ async function setup() {
   }
 
   const config = {
-    database: process.env.DB_NAME || 'netofings',
-    username: process.env.DB_USER || 'gusi',
-    password: process.env.DB_PASS || '123456',
-    host: process.env.DB_HOST || 'localhost',
+    database: process.env.DB_NAME,
+    username: process.env.DB_USER,
+    password: process.env.DB_PASS,
+    host: process.env.DB_HOST,
     dialect: 'postgres',
     logging: (s) => debug(s),
     setup: true,
@@ -33,13 +33,7 @@ async function setup() {
   await db(config).catch(handleFatalError);
 
   console.log('Success!');
-  process.exit(0);
-}
-
-function handleFatalError(error) {
-  console.error(`${chalk.red('[fatal error]')} ${error.message}`);
-  console.error(error.stack);
-  process.exit(1);
+  return process.exit(0);
 }
 
 setup();
