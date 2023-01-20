@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: 'postgres:14'
+    env_file:
+      - ./.db.env
+    volumes:
+      - type: volume
+        source: dbdata
+        target: /var/lib/postgresql/data
+    ports:
+      - '5432:5432'
+  pgadmin:
+    image: dpage/pgadmin4
+    env_file:
+      - ./.pgadmin.env
+    ports:
+      - 5050:80
+  redis:
+    image: 'redis:7'
+    env_file:
+      - ./.redis.env
+    volumes:
+      - type: volume
+        source: redisdata
+        target: /data
+    ports:
+      - 6379:6379
+
+volumes:
+  dbdata:
+  redisdata:
