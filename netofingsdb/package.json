@@ -6,7 +6,7 @@
     "private": true,
     "scripts": {
         "test": "DEBUG=netofings:* nyc --reporter=lcov ava tests/*-tests.js --verbose",
-        "setup": "DEBUG=netofings:* node setup.js",
+        "setup": "DEBUG=netofings:* node src/setup.js",
         "examples": "node examples/index.js",
         "lint": "eslint --ext .jsx --ext .js ./"
     },
