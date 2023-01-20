@@ -71,7 +71,7 @@ test.beforeEach(async () => {
   AgentStub.findAll.withArgs(connectedArgs).returns(Promise.resolve(agentFixtures.connected));
   AgentStub.findAll.withArgs(usernameArgs).returns(Promise.resolve(agentFixtures.platzi));
 
-  const setupDatabase = proxyquire('../index', {
+  const setupDatabase = proxyquire('../src/index', {
     './models/agent': () => AgentStub,
     './models/metric': () => MetricStub,
   });
