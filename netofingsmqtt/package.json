@@ -3,10 +3,10 @@
     "version": "1.0.0",
     "private": true,
     "description": "Una plataforma IoT",
-    "main": "server.js",
+    "main": "./src/server.js",
     "scripts": {
-        "start": "NODE_ENV=production node server.js",
-        "start-dev": "DEBUG=netofings:* nodemon server.js",
+        "start": "NODE_ENV=production node ./src/server.js",
+        "start-dev": "DEBUG=netofings:* nodemon ./src/server.js",
         "lint": "standard"
     },
     "repository": {

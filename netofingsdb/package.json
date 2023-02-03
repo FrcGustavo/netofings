@@ -2,7 +2,7 @@
     "name": "netofingsdb",
     "version": "1.0.0",
     "description": "A simple iot platform",
-    "main": "index.js",
+    "main": "./src/index.js",
     "private": true,
     "scripts": {
         "test": "DEBUG=netofings:* nyc --reporter=lcov ava tests/*-tests.js --verbose",
