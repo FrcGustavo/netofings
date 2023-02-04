@@ -19,6 +19,8 @@ const settings = {
   backend
 }
 
+console.log();
+
 const config = {
   database: process.env.DB_NAME || 'netofings',
   username: process.env.DB_USER || 'gusi',
