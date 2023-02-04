@@ -4,7 +4,7 @@ import asyncify from 'express-asyncify'
 import * as auth from 'express-jwt'
 import Guard from 'express-jwt-permissions'
 import db from 'netofingsdb'
-import config from './config.js'    
+import config from './config'    
 
 const debug = Debug('netofings:api:routes')
 const guard = Guard()
