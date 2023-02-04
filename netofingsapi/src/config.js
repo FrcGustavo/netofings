@@ -9,9 +9,10 @@ module.exports = {
     password: process.env.DB_PASS || '123456',
     host: process.env.DB_HOST || 'localhost',
     dialect: 'postgres',
-    logging: s => debug(s)
+    logging: (/** @type {string} */ s) => debug(s)
   },
   auth: {
-    secret: process.env.SECRET || 'platzi'
+    secret: process.env.SECRET || 'platzi',
+    algorithms: ['RS256'],
   }
 }
