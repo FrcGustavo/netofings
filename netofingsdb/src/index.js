@@ -5,6 +5,22 @@ const setupMetricModel = require('./models/metric');
 const setupAgent = require('./lib/agent');
 const setupMetric = require('./lib/metric');
 
+/**
+ * @typedef {object} DbConfig
+ * @property {string} [database]
+ * @property {string} [username]
+ * @property {string} [password]
+ * @property {string} [host]
+ * @property {string} [dialect]
+ * @property {{max?: number, min?: number}} [pool]
+ * @property {{raw?: boolean}} [query]
+ * @property {boolean} [setup]
+ * @property {(message: string) => void} [logging]
+ */
+
+/**
+ * @param {DbConfig} config
+ */
 module.exports = async function (config) {
   config = defaults(config, {
     dialect: 'sqlite',

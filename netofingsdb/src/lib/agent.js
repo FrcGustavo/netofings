@@ -1,8 +1,17 @@
+/**
+ * @param {any} AgentModel
+ */
 module.exports = function setupAgent(AgentModel) {
+  /**
+   * @param {number} id
+   */
   function findById(id) {
     return AgentModel.findById(id);
   }
 
+  /**
+   * @param {{ uuid: string, [key: string]: any }} agent
+   */
   async function createOrUpdate(agent) {
     const cond = {
       where: {
@@ -21,6 +30,9 @@ module.exports = function setupAgent(AgentModel) {
     return result.toJSON();
   }
 
+  /**
+   * @param {string} uuid
+   */
   function findByUuid(uuid) {
     return AgentModel.findOne({
       where: {
@@ -41,6 +53,9 @@ module.exports = function setupAgent(AgentModel) {
     });
   }
 
+  /**
+   * @param {string} username
+   */
   function findByUsername(username) {
     return AgentModel.findAll({
       where: {

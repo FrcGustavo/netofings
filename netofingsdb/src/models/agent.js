@@ -1,6 +1,9 @@
 const Sequelize = require('sequelize');
 const setupDatabase = require('../lib/db');
 
+/**
+ * @param {object} config
+ */
 module.exports = function setupAgentModel(config) {
   const sequelize = setupDatabase(config);
   return sequelize.define('agent', {

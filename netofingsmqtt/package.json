@@ -15,6 +15,11 @@
     },
     "author": "FrcGustavo",
     "license": "MIT",
+    "overrides": {
+        "mosca": {
+            "jsonschema": "1.2.7"
+        }
+    },
     "bugs": {
         "url": "https://github.com/FranciscoGustavo/netofings/issues"
     },
@@ -26,6 +31,7 @@
     "dependencies": {
         "chalk": "^3.0.0",
         "debug": "^4.1.1",
+        "dotenv": "^16.4.5",
         "mosca": "^2.8.3",
         "netofingsdb": "file:../netofingsdb",
         "redis": "^3.0.2"

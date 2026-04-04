@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import Debug from 'debug';
 
 const debug = Debug('netofings:api:db');

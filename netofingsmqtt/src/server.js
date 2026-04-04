@@ -1,5 +1,7 @@
 'use strict'
 
+require('dotenv').config()
+
 const debug = require('debug')('netofings:mqtt')
 const mosca = require('mosca')
 const redis = require('redis')

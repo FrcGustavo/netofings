@@ -43,3 +43,17 @@ function handler (payload) {
 
 setTimeout(() => agent.disconnect(), 20000)
 ```
+
+## Examples
+
+Run CPU usage example:
+
+```bash
+node examples/cpu.js
+```
+
+Run memory usage example:
+
+```bash
+node examples/memory.js
+```

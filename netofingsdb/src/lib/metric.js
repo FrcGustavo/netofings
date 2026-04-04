@@ -1,4 +1,11 @@
+/**
+ * @param {any} MetricModel
+ * @param {any} AgentModel
+ */
 module.exports = function setupMetric(MetricModel, AgentModel) {
+  /**
+   * @param {string} uuid
+   */
   async function findByAgentUuid(uuid) {
     return MetricModel.findAll({
       attributes: ['type'],
@@ -14,6 +21,10 @@ module.exports = function setupMetric(MetricModel, AgentModel) {
     });
   }
 
+  /**
+   * @param {string} type
+   * @param {string} uuid
+   */
   async function findByTypeAgentUuid(type, uuid) {
     return MetricModel.findAll({
       attributes: ['id', 'type', 'value', 'createdAt'],
@@ -35,6 +46,10 @@ module.exports = function setupMetric(MetricModel, AgentModel) {
     });
   }
 
+  /**
+   * @param {string} uuid
+   * @param {{ [key: string]: any }} metric
+   */
   async function create(uuid, metric) {
     const agent = await AgentModel.findOne({
       where: { uuid },
