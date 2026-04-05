@@ -20,7 +20,8 @@ async function bootstrap() {
   const port = Number(process.env.PORT || 3001);
   await app.listen(port);
 
-  logger.log(`${chalk.green('[netofings-api-nest]')} server listening on port ${port}`);
+  // logger.log(`${chalk.green('[netofings-api-nest]')} server listening on port ${port}`);
+  logger.log(`[netofings-api-nest] server listening on port ${port}`);
 }
 
 bootstrap();

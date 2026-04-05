@@ -57,7 +57,7 @@ export class BrokerService implements OnModuleInit, OnApplicationShutdown {
 
     this.registerHandlers();
 
-    this.logger.log(chalk.green('[netofings-mqtt-nest]') + ` server is running on port ${mqttConfig.port}`);
+    this.logger.log(`[netofings-mqtt-nest] server is running on port ${mqttConfig.port}`);
   }
 
   onApplicationShutdown() {

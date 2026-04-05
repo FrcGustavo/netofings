@@ -9,7 +9,8 @@ async function bootstrap() {
   const app = await NestFactory.createApplicationContext(AppModule);
   app.enableShutdownHooks();
 
-  logger.log(chalk.green('[netofings-mqtt-nest]') + ' broker application context started');
+//   logger.log(chalk.green('[netofings-mqtt-nest]') + ' broker application context started');
+    logger.log('[netofings-mqtt-nest] broker application context started');
 }
 
 bootstrap();
