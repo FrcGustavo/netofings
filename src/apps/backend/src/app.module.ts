@@ -5,6 +5,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { BrokerModule } from './broker/broker.module';
 import { UsersModule } from './users/users.module';
+import { AgentsModule } from './agents/agents.module';
 import config from './config';
 
 @Module({
@@ -29,6 +30,7 @@ import config from './config';
     }),
     BrokerModule,
     UsersModule,
+    AgentsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
