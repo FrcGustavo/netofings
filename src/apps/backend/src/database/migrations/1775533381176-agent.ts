@@ -5,61 +5,28 @@ export class Agent1775533381176 implements MigrationInterface {
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
-      `ALTER TABLE "agents" DROP CONSTRAINT "agents_pkey"`,
+      `CREATE TABLE "agents" (
+        "uuid" character varying(64) NOT NULL,
+        "username" character varying(120) NOT NULL,
+        "name" character varying(120) NOT NULL,
+        "hostname" character varying(200) NOT NULL,
+        "pid" integer NOT NULL,
+        "connected" boolean NOT NULL DEFAULT false,
+        "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
+        "updatedAt" TIMESTAMP NOT NULL DEFAULT now(),
+        "userId" uuid NOT NULL,
+        CONSTRAINT "PK_c0ab05964eedadbce716671b9b1" PRIMARY KEY ("uuid")
+      )`,
     );
-    await queryRunner.query(`ALTER TABLE "agents" DROP COLUMN "id"`);
-    await queryRunner.query(`ALTER TABLE "agents" DROP COLUMN "createdAt"`);
-    await queryRunner.query(`ALTER TABLE "agents" DROP COLUMN "updatedAt"`);
-    await queryRunner.query(`ALTER TABLE "agents" DROP COLUMN "uuid"`);
     await queryRunner.query(
-      `ALTER TABLE "agents" ADD "uuid" character varying(64) NOT NULL`,
-    );
-    await queryRunner.query(
-      `ALTER TABLE "agents" ADD CONSTRAINT "PK_c0ab05964eedadbce716671b9b1" PRIMARY KEY ("uuid")`,
-    );
-    await queryRunner.query(`ALTER TABLE "agents" DROP COLUMN "username"`);
-    await queryRunner.query(
-      `ALTER TABLE "agents" ADD "username" character varying(120) NOT NULL`,
-    );
-    await queryRunner.query(`ALTER TABLE "agents" DROP COLUMN "name"`);
-    await queryRunner.query(
-      `ALTER TABLE "agents" ADD "name" character varying(120) NOT NULL`,
-    );
-    await queryRunner.query(`ALTER TABLE "agents" DROP COLUMN "hostname"`);
-    await queryRunner.query(
-      `ALTER TABLE "agents" ADD "hostname" character varying(200) NOT NULL`,
+      `ALTER TABLE "agents" ADD CONSTRAINT "FK_agents_user" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
     );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`ALTER TABLE "agents" DROP COLUMN "hostname"`);
     await queryRunner.query(
-      `ALTER TABLE "agents" ADD "hostname" character varying(255) NOT NULL`,
+      `ALTER TABLE "agents" DROP CONSTRAINT "FK_agents_user"`,
     );
-    await queryRunner.query(`ALTER TABLE "agents" DROP COLUMN "name"`);
-    await queryRunner.query(
-      `ALTER TABLE "agents" ADD "name" character varying(255) NOT NULL`,
-    );
-    await queryRunner.query(`ALTER TABLE "agents" DROP COLUMN "username"`);
-    await queryRunner.query(
-      `ALTER TABLE "agents" ADD "username" character varying(255) NOT NULL`,
-    );
-    await queryRunner.query(
-      `ALTER TABLE "agents" DROP CONSTRAINT "PK_c0ab05964eedadbce716671b9b1"`,
-    );
-    await queryRunner.query(`ALTER TABLE "agents" DROP COLUMN "uuid"`);
-    await queryRunner.query(
-      `ALTER TABLE "agents" ADD "uuid" character varying(255) NOT NULL`,
-    );
-    await queryRunner.query(
-      `ALTER TABLE "agents" ADD "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL`,
-    );
-    await queryRunner.query(
-      `ALTER TABLE "agents" ADD "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL`,
-    );
-    await queryRunner.query(`ALTER TABLE "agents" ADD "id" SERIAL NOT NULL`);
-    await queryRunner.query(
-      `ALTER TABLE "agents" ADD CONSTRAINT "agents_pkey" PRIMARY KEY ("id")`,
-    );
+    await queryRunner.query(`DROP TABLE "agents"`);
   }
 }

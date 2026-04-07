@@ -6,6 +6,7 @@ import { AppService } from './app.service';
 import { BrokerModule } from './broker/broker.module';
 import { UsersModule } from './users/users.module';
 import { AgentsModule } from './agents/agents.module';
+import { MetricsModule } from './metrics/metrics.module';
 import config from './config';
 
 @Module({
@@ -31,6 +32,7 @@ import config from './config';
     BrokerModule,
     UsersModule,
     AgentsModule,
+    MetricsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

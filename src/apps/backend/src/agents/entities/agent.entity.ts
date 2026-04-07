@@ -1,4 +1,14 @@
-import { Column, Entity, PrimaryColumn } from 'typeorm';
+import { Metric } from '../../metrics/entities/metric.entity';
+import { User } from '../../users/entities/user.entity';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity('agents')
 export class Agent {
@@ -19,4 +29,19 @@ export class Agent {
 
   @Column({ type: 'boolean', default: false })
   connected!: boolean;
+
+  @CreateDateColumn()
+  createdAt!: Date;
+
+  @UpdateDateColumn()
+  updatedAt!: Date;
+
+  @OneToMany(() => Metric, (metric: Metric) => metric.agent)
+  metrics!: Metric[];
+
+  @ManyToOne(() => User, (user: User) => user.agents, {
+    nullable: false,
+    onDelete: 'CASCADE',
+  })
+  user!: User;
 }

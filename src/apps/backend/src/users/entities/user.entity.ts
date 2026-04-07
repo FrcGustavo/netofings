@@ -5,9 +5,11 @@ import {
   Generated,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
+import { Agent } from '../../agents/entities/agent.entity';
 
-@Entity()
+@Entity('users')
 export class User {
   @PrimaryGeneratedColumn('uuid')
   @Generated('uuid')
@@ -29,4 +31,7 @@ export class User {
 
   @UpdateDateColumn()
   updatedAt!: Date;
+
+  @OneToMany(() => Agent, (agent: Agent) => agent.user)
+  agents!: Agent[];
 }
