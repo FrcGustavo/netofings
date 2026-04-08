@@ -18,6 +18,19 @@ export class UsersService {
     return this.usersRepository.save(user);
   }
 
+  async findOrCreateByName(name: string) {
+    const existing = await this.usersRepository.findOne({
+      where: { name },
+    });
+
+    if (existing) {
+      return existing;
+    }
+
+    const user = this.usersRepository.create({ name });
+    return this.usersRepository.save(user);
+  }
+
   findAll() {
     return this.usersRepository.find({
       order: { createdAt: 'DESC' },

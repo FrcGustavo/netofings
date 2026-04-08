@@ -8,5 +8,6 @@ import { Metric } from './entities/metric.entity';
   imports: [TypeOrmModule.forFeature([Metric])],
   controllers: [MetricsController],
   providers: [MetricsService],
+  exports: [MetricsService],
 })
 export class MetricsModule {}
