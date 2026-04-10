@@ -1,0 +1,35 @@
+{
+  "name": "agent",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "example": "tsx examples/index.ts",
+    "typecheck": "tsc --noEmit",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/index.js",
+    "lint": "eslint src --ext .ts",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "mqtt": "^5.15.1",
+    "typescript": "^5.9.3",
+    "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "@eslint/js": "^8.57.1",
+    "@types/node": "^20.19.39",
+    "@types/uuid": "^10.0.0",
+    "eslint": "^8.57.1",
+    "globals": "^13.24.0",
+    "prettier": "^3.8.1",
+    "tsx": "^4.21.0",
+    "typescript-eslint": "^8.58.1"
+  }
+}
