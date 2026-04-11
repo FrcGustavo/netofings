@@ -1,0 +1,23 @@
+.app-shell {
+  min-height: 100vh;
+  background: radial-gradient(circle at 20% 0%, #f2f7ff 0%, #f9fbff 25%, #ffffff 70%);
+}
+
+.app-header {
+  padding: 28px 24px;
+  border-bottom: 1px solid #d7e0ee;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(8px);
+}
+
+.app-header h1 {
+  margin: 0;
+  font-size: 1.6rem;
+  letter-spacing: 0.01em;
+}
+
+.app-main {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 24px;
+}
