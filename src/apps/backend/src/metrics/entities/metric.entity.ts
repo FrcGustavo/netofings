@@ -3,15 +3,17 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  Generated,
   ManyToOne,
-  PrimaryGeneratedColumn,
+  PrimaryColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
 @Entity('metrics')
 export class Metric {
-  @PrimaryGeneratedColumn()
-  id!: number;
+  @PrimaryColumn({ type: 'uuid' })
+  @Generated('uuid')
+  id!: string;
 
   @Column({ type: 'varchar' })
   type!: string;

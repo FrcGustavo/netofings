@@ -4,6 +4,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  Generated,
   ManyToOne,
   OneToMany,
   PrimaryColumn,
@@ -12,8 +13,9 @@ import {
 
 @Entity('agents')
 export class Agent {
-  @PrimaryColumn({ type: 'varchar', length: 64 })
-  uuid!: string;
+  @PrimaryColumn({ type: 'uuid' })
+  @Generated('uuid')
+  id!: string;
 
   @Column({ type: 'varchar', length: 120 })
   username!: string;

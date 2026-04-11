@@ -1,17 +1,17 @@
 import {
   Column,
   Entity,
-  PrimaryGeneratedColumn,
   Generated,
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
+  PrimaryColumn,
 } from 'typeorm';
 import { Agent } from '../../agents/entities/agent.entity';
 
 @Entity('users')
 export class User {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryColumn({ type: 'uuid' })
   @Generated('uuid')
   id!: string;
 
