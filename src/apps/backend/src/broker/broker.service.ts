@@ -6,7 +6,7 @@ import { MetricsService } from '../metrics/metrics.service';
 import { UsersService } from '../users/users.service';
 
 interface AgentPayload {
-  uuid: string;
+  id: string;
   username: string;
   name: string;
   hostname: string;
@@ -120,7 +120,7 @@ export class BrokerService implements OnModuleInit {
       if (!this.clients.get(client.id)) {
         this.publishInternalMessage('agent/connected', {
           agent: {
-            uuid: agent.uuid,
+            id: agent.id,
             name: agent.name,
             hostname: agent.hostname,
             pid: agent.pid,
@@ -129,7 +129,7 @@ export class BrokerService implements OnModuleInit {
         });
       }
 
-      this.clients.set(client.id, agent.uuid);
+      this.clients.set(client.id, agent.id);
     } catch (error) {
       this.logger.error('Error processing agent/message payload', error);
     }
@@ -141,7 +141,7 @@ export class BrokerService implements OnModuleInit {
         typeof payload === 'string' ? payload : payload.toString('utf8');
       const parsed = JSON.parse(raw) as AgentMessagePayload;
       if (
-        !parsed?.agent?.uuid ||
+        !parsed?.agent?.id ||
         !parsed.agent.username ||
         !parsed.agent.name ||
         !parsed.agent.hostname ||

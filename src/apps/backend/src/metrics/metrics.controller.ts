@@ -11,32 +11,39 @@ import { MetricsService } from './metrics.service';
 import { CreateMetricDto } from './dto/create-metric.dto';
 import { UpdateMetricDto } from './dto/update-metric.dto';
 
-@Controller('metrics')
+@Controller('agents/:agentId/metrics')
 export class MetricsController {
   constructor(private readonly metricsService: MetricsService) {}
 
   @Post()
-  create(@Body() createMetricDto: CreateMetricDto) {
-    return this.metricsService.create(createMetricDto);
+  create(
+    @Param('agentId') agentId: string,
+    @Body() createMetricDto: CreateMetricDto,
+  ) {
+    return this.metricsService.create(agentId, createMetricDto);
   }
 
   @Get()
-  findAll() {
-    return this.metricsService.findAll();
+  findAll(@Param('agentId') agentId: string) {
+    return this.metricsService.findAll(agentId);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.metricsService.findOne(Number(id));
+  findOne(@Param('agentId') agentId: string, @Param('id') id: string) {
+    return this.metricsService.findOne(agentId, id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateMetricDto: UpdateMetricDto) {
-    return this.metricsService.update(Number(id), updateMetricDto);
+  update(
+    @Param('agentId') agentId: string,
+    @Param('id') id: string,
+    @Body() updateMetricDto: UpdateMetricDto,
+  ) {
+    return this.metricsService.update(agentId, id, updateMetricDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.metricsService.remove(Number(id));
+  remove(@Param('agentId') agentId: string, @Param('id') id: string) {
+    return this.metricsService.remove(agentId, id);
   }
 }

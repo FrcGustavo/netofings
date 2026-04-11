@@ -13,7 +13,7 @@ export class MetricsService {
     private readonly metricsRepository: Repository<Metric>,
   ) {}
 
-  async create(createMetricDto: CreateMetricDto) {
+  async create(agentId: string, createMetricDto: CreateMetricDto) {
     const metric = this.metricsRepository.create(createMetricDto);
     return this.metricsRepository.save(metric);
   }
@@ -28,20 +28,30 @@ export class MetricsService {
     return this.metricsRepository.save(metric);
   }
 
-  findAll() {
-    return this.metricsRepository.find();
+  async findAll(agentId: string) {
+    const metrics = await this.metricsRepository.find({
+      where: { agent: { id: agentId } },
+      order: { createdAt: 'DESC' },
+    });
+
+    return metrics.reduce<Record<string, Metric[]>>((acc, metric) => {
+      const bucket = acc[metric.type] ?? [];
+      bucket.push(metric);
+      acc[metric.type] = bucket;
+      return acc;
+    }, {});
   }
 
-  findOne(id: number) {
+  findOne(agentId: string, id: string) {
     return this.metricsRepository.findOneBy({ id });
   }
 
-  async update(id: number, updateMetricDto: UpdateMetricDto) {
+  async update(agentId: string, id: string, updateMetricDto: UpdateMetricDto) {
     await this.metricsRepository.update(id, updateMetricDto);
-    return this.findOne(id);
+    return this.findOne(agentId, id);
   }
 
-  remove(id: number) {
+  remove(agentId: string, id: string) {
     return this.metricsRepository.delete(id);
   }
 

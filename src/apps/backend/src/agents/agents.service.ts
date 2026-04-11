@@ -21,7 +21,7 @@ export class AgentsService {
 
   async upsertFromMqtt(
     payload: {
-      uuid: string;
+      id: string;
       username: string;
       name: string;
       hostname: string;
@@ -29,10 +29,9 @@ export class AgentsService {
     },
     user: User,
   ) {
-    const existing = await this.findOne(payload.uuid);
+    const existing = await this.findOne(payload.id);
 
     const data = {
-      uuid: payload.uuid,
       username: payload.username,
       name: payload.name,
       hostname: payload.hostname,
@@ -42,33 +41,33 @@ export class AgentsService {
     };
 
     if (existing) {
-      await this.agentsRepository.update({ uuid: payload.uuid }, data);
-      return this.findOne(payload.uuid);
+      await this.agentsRepository.update({ id: payload.id }, data);
+      return this.findOne(payload.id);
     }
 
     const agent = this.agentsRepository.create(data);
     return this.agentsRepository.save(agent);
   }
 
-  async markDisconnected(uuid: string) {
-    await this.agentsRepository.update({ uuid }, { connected: false });
-    return this.findOne(uuid);
+  async markDisconnected(id: string) {
+    await this.agentsRepository.update({ id }, { connected: false });
+    return this.findOne(id);
   }
 
   findAll() {
     return this.agentsRepository.find();
   }
 
-  findOne(uuid: string) {
-    return this.agentsRepository.findOneBy({ uuid });
+  findOne(id: string) {
+    return this.agentsRepository.findOneBy({ id });
   }
 
-  async update(uuid: string, updateAgentDto: UpdateAgentDto) {
-    await this.agentsRepository.update({ uuid }, updateAgentDto);
-    return this.findOne(uuid);
+  async update(id: string, updateAgentDto: UpdateAgentDto) {
+    await this.agentsRepository.update({ id }, updateAgentDto);
+    return this.findOne(id);
   }
 
-  remove(uuid: string) {
-    return this.agentsRepository.delete({ uuid });
+  remove(id: string) {
+    return this.agentsRepository.delete({ id });
   }
 }
