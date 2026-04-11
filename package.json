@@ -1,7 +1,7 @@
 {
   "name": "netofings-monorepo",
   "private": true,
-  "packageManager": "npm@10.9.2",
+  "packageManager": "npm@11.11.1",
   "workspaces": [
     "src/apps/*",
     "src/packages/*"
