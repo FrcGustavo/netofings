@@ -34,12 +34,22 @@ export class MetricsService {
       order: { createdAt: 'DESC' },
     });
 
-    return metrics.reduce<Record<string, Metric[]>>((acc, metric) => {
-      const bucket = acc[metric.type] ?? [];
-      bucket.push(metric);
-      acc[metric.type] = bucket;
-      return acc;
-    }, {});
+    const groupedMetrics = metrics.reduce<Record<string, Metric[]>>(
+      (acc, metric) => {
+        const bucket = acc[metric.type] ?? [];
+        bucket.push(metric);
+        acc[metric.type] = bucket;
+        return acc;
+      },
+      {},
+    );
+
+    return Object.keys(groupedMetrics)
+      .sort((a, b) => a.localeCompare(b))
+      .reduce<Record<string, Metric[]>>((acc, key) => {
+        acc[key] = groupedMetrics[key];
+        return acc;
+      }, {});
   }
 
   findOne(agentId: string, id: string) {
