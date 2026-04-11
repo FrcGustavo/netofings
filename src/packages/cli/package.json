@@ -1,0 +1,40 @@
+{
+  "name": "@netofings/cli",
+  "version": "0.1.0",
+  "description": "Modern CLI client for Netofings",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "netofings": "dist/bin.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "main": "dist/bin.js",
+  "types": "dist/bin.d.ts",
+  "scripts": {
+    "build": "tsup",
+    "dev": "npm run build && node dist/bin.js",
+    "start": "node dist/bin.js",
+    "typecheck": "tsc --noEmit",
+    "lint": "npm run typecheck",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@netofings/agent": "file:../agent",
+    "asciichart": "^1.5.25",
+    "commander": "^14.0.1",
+    "ink": "^7.0.0",
+    "react": "^19.2.0",
+    "zod": "^3.25.42"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "@types/react": "^19.2.0",
+    "tsup": "^8.2.4",
+    "tsx": "^4.19.1",
+    "typescript": "^5.8.3",
+    "vitest": "^2.1.5"
+  }
+}
+
