@@ -15,6 +15,11 @@ type NetofingsAgentProps = {
 
 type MetricValue = number | string | boolean | null
 
+type MetricCallback = (error: Error | null, value: MetricValue) => void
+type MetricFunction = () => MetricValue | Promise<MetricValue>
+type CallbackMetricFunction = (callback: MetricCallback) => void
+type NormalizedMetricFunction = () => Promise<MetricValue>
+
 type Message = {
     agent: {
         id: string;
@@ -36,7 +41,7 @@ class NetofingsAgent extends EventEmitter {
     private client: MqttClient | null;
     private agentId: string;
     private timer: NodeJS.Timeout | null;
-    metrics: Map<string, Function>;
+    metrics: Map<string, NormalizedMetricFunction>;
 
     constructor(props: NetofingsAgentProps) {
         super();
@@ -53,15 +58,15 @@ class NetofingsAgent extends EventEmitter {
         this.metrics = new Map();
     }
 
-    private normalizeMetricFn = (fn: Function): Function => {
+    private normalizeMetricFn = (fn: MetricFunction | CallbackMetricFunction): NormalizedMetricFunction => {
         if (fn.length === 1) {
-            return util.promisify(fn);
+            return util.promisify(fn as CallbackMetricFunction) as NormalizedMetricFunction;
         }
 
-        return fn
+        return () => Promise.resolve((fn as MetricFunction)());
     }
 
-    addMetric(type: string, fn: Function) {
+    addMetric(type: string, fn: MetricFunction | CallbackMetricFunction) {
         this.metrics.set(type, this.normalizeMetricFn(fn));
     }
 
