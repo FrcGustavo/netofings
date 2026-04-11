@@ -6,8 +6,9 @@ import { v4 } from 'uuid';
 import { parsePayload } from './utils';
 
 type NetofingsAgentProps = {
-    uuid?: string;
+    id?: string;
     username: string;
+    name: string;
     interval: number;
     host: string;
 }
@@ -16,9 +17,9 @@ type MetricValue = number | string | boolean | null
 
 type Message = {
     agent: {
-        uuid: string;
+        id: string;
         username: string;
-        name?: string;
+        name: string;
         hostname: string;
         pid: number;
     };
@@ -41,12 +42,13 @@ class NetofingsAgent extends EventEmitter {
         super();
         this.options = {
             username: props.username,
+            name: props.name,
             interval: props.interval,
             host: props.host,
         };
         this.started = false;
         this.client = null;
-        this.agentId = props.uuid || v4();
+        this.agentId = props.id || v4();
         this.timer = null;
         this.metrics = new Map();
     }
@@ -85,9 +87,9 @@ class NetofingsAgent extends EventEmitter {
                     if (this.metrics.size > 0) {
                         const message: Message = {
                             agent: {
-                                uuid: this.agentId,
+                                id: this.agentId,
                                 username: this.options.username,
-                                // name: os.hostname(),
+                                name: this.options.name,
                                 hostname: os.hostname(),
                                 pid: process.pid,
                             },
@@ -114,7 +116,7 @@ class NetofingsAgent extends EventEmitter {
                     case 'agent/connected':
                     case 'agent/disconnected':
                     case 'agent/message':
-                        broadcast = parsedPayload && parsedPayload.agent && parsedPayload.agent.uuid !== this.agentId;
+                        broadcast = Boolean(parsedPayload && parsedPayload.agent && (parsedPayload.agent as { id: string })?.id !== this.agentId);
                         break;
                 }
 
@@ -122,8 +124,9 @@ class NetofingsAgent extends EventEmitter {
                     this.emit(topic, parsedPayload);
                 }
 
-                this.client?.on('error', () => this.disconnect());
             });
+
+            this.client?.on('error', () => this.disconnect());
         }
     }
 

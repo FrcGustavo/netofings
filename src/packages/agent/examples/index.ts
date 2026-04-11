@@ -7,8 +7,9 @@ type NetworkInterfaceInfoWithStats = os.NetworkInterfaceInfo & {
 };
 
 const agent = new NetofingsAgent({ 
-    uuid: 'ca24780d-c193-4373-81be-096b85648920',
-    username: 'Agent1',
+    id: 'ac8b4a34-3d0e-4985-8634-23e78d8ac1aa',
+    name: 'Agent1',
+    username: 'Gustavo',
     interval: 5000,
     host: 'mqtt://localhost'
 });
