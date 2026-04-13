@@ -9,5 +9,6 @@ export default registerAs('config', () => {
       password: process.env.POSTGRES_PASSWORD,
       dbName: process.env.POSTGRES_DB,
     },
+    jwtSecret: process.env.JWT_SECRET,
   };
 });
