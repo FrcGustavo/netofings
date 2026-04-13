@@ -24,6 +24,5 @@ import config from '../config';
   ],
   providers: [AuthService, LocalStrategy, JWTStrategy, RefreshJWTStrategy],
   controllers: [AuthController],
-//   exports: [AuthService],
 })
 export class AuthModule {}
