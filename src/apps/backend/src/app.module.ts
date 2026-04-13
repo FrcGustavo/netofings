@@ -7,6 +7,8 @@ import { BrokerModule } from './broker/broker.module';
 import { UsersModule } from './users/users.module';
 import { AgentsModule } from './agents/agents.module';
 import { MetricsModule } from './metrics/metrics.module';
+import { AuthModule } from './auth/auth.module';
+
 import config from './config';
 
 @Module({
@@ -29,6 +31,7 @@ import config from './config';
         autoLoadEntities: true,
       }),
     }),
+    AuthModule,
     BrokerModule,
     UsersModule,
     AgentsModule,
