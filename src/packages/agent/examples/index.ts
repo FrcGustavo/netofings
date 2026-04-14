@@ -1,144 +1,186 @@
-import os from 'node:os';
-import { execSync } from 'node:child_process';
-import NetofingsAgent from '../src/index';
+import os from "node:os";
+import { execSync } from "node:child_process";
+import NetofingsAgent from "../src/index";
+
+const agentToken = process.env.NETOFINGS_AGENT_TOKEN;
+
+if (!agentToken) {
+  throw new Error(
+    "NETOFINGS_AGENT_TOKEN is required to authenticate with the MQTT broker.",
+  );
+}
 
 type NetworkTotals = {
-    rxBytes: number;
-    txBytes: number;
+  rxBytes: number;
+  txBytes: number;
 };
 
 type ThroughputSample = {
-    totalBytes: number;
-    timestampMs: number;
+  totalBytes: number;
+  timestampMs: number;
 };
 
-function getNetworkTotals(): NetworkTotals {
-    try {
-        const output = execSync('netstat -ibn', {
-            encoding: 'utf8',
-            stdio: ['ignore', 'pipe', 'ignore'],
-        });
+type CpuSample = {
+  idle: number;
+  total: number;
+};
 
-        const lines = output.split('\n').filter(Boolean);
-        const header = lines.find((line) => line.includes('Name') && line.includes('Ibytes') && line.includes('Obytes'));
+function getCpuSample(): CpuSample {
+  const cpus = os.cpus();
 
-        if (!header) {
-            return { rxBytes: 0, txBytes: 0 };
-        }
+  const idle = cpus.reduce((acc, cpu) => acc + cpu.times.idle, 0);
+  const total = cpus.reduce(
+    (acc, cpu) =>
+      acc + Object.values(cpu.times).reduce((sum, time) => sum + time, 0),
+    0,
+  );
 
-        const headerColumns = header.trim().split(/\s+/);
-        const nameIndex = headerColumns.indexOf('Name');
-        const inBytesIndex = headerColumns.indexOf('Ibytes');
-        const outBytesIndex = headerColumns.indexOf('Obytes');
-
-        if (nameIndex < 0 || inBytesIndex < 0 || outBytesIndex < 0) {
-            return { rxBytes: 0, txBytes: 0 };
-        }
-
-        const byInterface = new Map<string, { rxBytes: number; txBytes: number }>();
-
-        for (const line of lines) {
-            if (line === header) {
-                continue;
-            }
-
-            const columns = line.trim().split(/\s+/);
-            if (columns.length <= outBytesIndex) {
-                continue;
-            }
-
-            const name = columns[nameIndex];
-            if (!name || name === 'lo0') {
-                continue;
-            }
-
-            const rxBytes = Number(columns[inBytesIndex]);
-            const txBytes = Number(columns[outBytesIndex]);
-
-            if (!Number.isFinite(rxBytes) || !Number.isFinite(txBytes)) {
-                continue;
-            }
-
-            const current = byInterface.get(name) ?? { rxBytes: 0, txBytes: 0 };
-            current.rxBytes = Math.max(current.rxBytes, rxBytes);
-            current.txBytes = Math.max(current.txBytes, txBytes);
-            byInterface.set(name, current);
-        }
-
-        let totalRx = 0;
-        let totalTx = 0;
-
-        for (const value of byInterface.values()) {
-            totalRx += value.rxBytes;
-            totalTx += value.txBytes;
-        }
-
-        return { rxBytes: totalRx, txBytes: totalTx };
-    } catch {
-        return { rxBytes: 0, txBytes: 0 };
-    }
+  return {
+    idle,
+    total,
+  };
 }
 
-const agent = new NetofingsAgent({ 
-    id: 'ac8b4a34-3d0e-4985-8634-23e78d8ac1aa',
-    name: 'Agent1',
-    username: 'Gustavo',
-    interval: 5000,
-    host: 'mqtt://localhost'
+function getNetworkTotals(): NetworkTotals {
+  try {
+    const output = execSync("netstat -ibn", {
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "ignore"],
+    });
+
+    const lines = output.split("\n").filter(Boolean);
+    const header = lines.find(
+      (line) =>
+        line.includes("Name") &&
+        line.includes("Ibytes") &&
+        line.includes("Obytes"),
+    );
+
+    if (!header) {
+      return { rxBytes: 0, txBytes: 0 };
+    }
+
+    const headerColumns = header.trim().split(/\s+/);
+    const nameIndex = headerColumns.indexOf("Name");
+    const inBytesIndex = headerColumns.indexOf("Ibytes");
+    const outBytesIndex = headerColumns.indexOf("Obytes");
+
+    if (nameIndex < 0 || inBytesIndex < 0 || outBytesIndex < 0) {
+      return { rxBytes: 0, txBytes: 0 };
+    }
+
+    const byInterface = new Map<string, { rxBytes: number; txBytes: number }>();
+
+    for (const line of lines) {
+      if (line === header) {
+        continue;
+      }
+
+      const columns = line.trim().split(/\s+/);
+      if (columns.length <= outBytesIndex) {
+        continue;
+      }
+
+      const name = columns[nameIndex];
+      if (!name || name === "lo0") {
+        continue;
+      }
+
+      const rxBytes = Number(columns[inBytesIndex]);
+      const txBytes = Number(columns[outBytesIndex]);
+
+      if (!Number.isFinite(rxBytes) || !Number.isFinite(txBytes)) {
+        continue;
+      }
+
+      const current = byInterface.get(name) ?? { rxBytes: 0, txBytes: 0 };
+      current.rxBytes = Math.max(current.rxBytes, rxBytes);
+      current.txBytes = Math.max(current.txBytes, txBytes);
+      byInterface.set(name, current);
+    }
+
+    let totalRx = 0;
+    let totalTx = 0;
+
+    for (const value of byInterface.values()) {
+      totalRx += value.rxBytes;
+      totalTx += value.txBytes;
+    }
+
+    return { rxBytes: totalRx, txBytes: totalTx };
+  } catch {
+    return { rxBytes: 0, txBytes: 0 };
+  }
+}
+
+const agent = new NetofingsAgent({
+  name: "Agent1",
+  username: "Gustavo",
+  token: agentToken,
+  interval: 5000,
+  host: "mqtt://localhost",
 });
 
 agent.connect();
 
 let previousThroughputSample: ThroughputSample | null = null;
+let previousCpuSample: CpuSample | null = null;
 
-agent.addMetric('cpu', () => {
-    const cpus = os.cpus();
+agent.addMetric("cpu", () => {
+  const currentCpuSample = getCpuSample();
 
-    const totalIdle = cpus.reduce((acc, cpu) => acc + cpu.times.idle, 0);
-    const totalTick = cpus.reduce((acc, cpu) => acc + Object.values(cpu.times).reduce((sum, time) => sum + time, 0), 0);
+  if (!previousCpuSample) {
+    previousCpuSample = currentCpuSample;
+    return 0;
+  }
 
-    const idle = totalIdle / cpus.length;
-    const total = totalTick / cpus.length;
+  const idleDelta = currentCpuSample.idle - previousCpuSample.idle;
+  const totalDelta = currentCpuSample.total - previousCpuSample.total;
 
-    if (total === 0) {
-        return 0;
-    }
+  previousCpuSample = currentCpuSample;
 
-    const usagePercent = (1 - idle / total) * 100;
-    return Number(usagePercent.toFixed(2));
+  if (totalDelta <= 0) {
+    return 0;
+  }
+
+  const usagePercent = (1 - idleDelta / totalDelta) * 100;
+  return Number(usagePercent.toFixed(2));
 });
 
-agent.addMetric('memory', () => {
-    const totalMem = os.totalmem();
-    const freeMem = os.freemem();
+agent.addMetric("memory", () => {
+  const totalMem = os.totalmem();
+  const freeMem = os.freemem();
 
-    if (totalMem === 0) {
-        return 0;
-    }
+  if (totalMem === 0) {
+    return 0;
+  }
 
-    const usagePercent = ((totalMem - freeMem) / totalMem) * 100;
-    return Number(usagePercent.toFixed(2));
+  const usagePercent = ((totalMem - freeMem) / totalMem) * 100;
+  return Number(usagePercent.toFixed(2));
 });
 
-agent.addMetric('network', () => {
-    const { rxBytes, txBytes } = getNetworkTotals();
-    const totalBytes = rxBytes + txBytes;
-    const now = Date.now();
+agent.addMetric("network", () => {
+  const { rxBytes, txBytes } = getNetworkTotals();
+  const totalBytes = rxBytes + txBytes;
+  const now = Date.now();
 
-    if (!previousThroughputSample) {
-        previousThroughputSample = { totalBytes, timestampMs: now };
-        return 0;
-    }
-
-    const elapsedSeconds = (now - previousThroughputSample.timestampMs) / 1000;
-    const deltaBytes = Math.max(0, totalBytes - previousThroughputSample.totalBytes);
-
+  if (!previousThroughputSample) {
     previousThroughputSample = { totalBytes, timestampMs: now };
+    return 0;
+  }
 
-    if (elapsedSeconds <= 0) {
-        return 0;
-    }
+  const elapsedSeconds = (now - previousThroughputSample.timestampMs) / 1000;
+  const deltaBytes = Math.max(
+    0,
+    totalBytes - previousThroughputSample.totalBytes,
+  );
 
-    const mbps = (deltaBytes * 8) / (elapsedSeconds * 1_000_000);
-    return Number(mbps.toFixed(2));
-}); 
+  previousThroughputSample = { totalBytes, timestampMs: now };
+
+  if (elapsedSeconds <= 0) {
+    return 0;
+  }
+
+  const mbps = (deltaBytes * 8) / (elapsedSeconds * 1_000_000);
+  return Number(mbps.toFixed(2));
+});
