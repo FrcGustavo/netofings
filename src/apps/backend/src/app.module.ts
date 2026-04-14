@@ -8,7 +8,7 @@ import { UsersModule } from './users/users.module';
 import { AgentsModule } from './agents/agents.module';
 import { MetricsModule } from './metrics/metrics.module';
 import { AuthModule } from './auth/auth.module';
-
+import { TokensModule } from './tokens/tokens.module';
 import config from './config';
 
 @Module({
@@ -36,6 +36,7 @@ import config from './config';
     UsersModule,
     AgentsModule,
     MetricsModule,
+    TokensModule,
   ],
   controllers: [AppController],
   providers: [AppService],
