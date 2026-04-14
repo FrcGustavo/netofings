@@ -82,7 +82,7 @@ export function AgentMetricsPage() {
           </Typography>
         </Box>
 
-        <Stack direction="row" spacing={2} alignItems="center">
+        <Stack direction="row" spacing={2} sx={{ alignItems: "center" }}>
           <Card variant="outlined" sx={{ px: 2, py: 0.5, display: 'flex', alignItems: 'center', gap: 2 }}>
             <Tooltip title="Zoom Out">
               <IconButton size="small" onClick={() => setZoom(prev => Math.max(1, prev - 0.5))}>
@@ -90,7 +90,7 @@ export function AgentMetricsPage() {
               </IconButton>
             </Tooltip>
             <Box sx={{ width: 150 }}>
-              <Typography variant="caption" color="text.secondary" align="center" display="block">
+              <Typography variant="caption" color="text.secondary" align="center" sx={{ display: "block" }}>
                 Horizontal Zoom ({zoom}x)
               </Typography>
               <Slider
@@ -187,9 +187,7 @@ export function AgentMetricsPage() {
                           },
                         ]}
                         margin={{ left: 50, right: 30, top: 20, bottom: 40 }}
-                        slotProps={{
-                          legend: { hidden: true }
-                        }}
+                        hideLegend={true}
                       />
                     </Box>
                   </Box>

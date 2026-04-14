@@ -10,7 +10,6 @@ export function useAgentRealtime() {
 
   useEffect(() => {
     const socket = io(SOCKET_URL ?? window.location.origin, {
-      allowEIO3: true,
       reconnection: true,
     })
 
