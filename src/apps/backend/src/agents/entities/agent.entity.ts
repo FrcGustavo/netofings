@@ -1,5 +1,6 @@
 import { Metric } from '../../metrics/entities/metric.entity';
 import { User } from '../../users/entities/user.entity';
+import { AgentToken } from '../../tokens/entities/agent-token.entity';
 import {
   Column,
   CreateDateColumn,
@@ -20,6 +21,10 @@ export class Agent {
   @Column({ type: 'varchar', length: 120 })
   username!: string;
 
+  /**
+   * NOTA: El campo 'name' queda obsoleto y solo existe por compatibilidad.
+   * Usar únicamente 'username' en la lógica y la UI.
+   */
   @Column({ type: 'varchar', length: 120 })
   name!: string;
 
@@ -40,6 +45,9 @@ export class Agent {
 
   @OneToMany(() => Metric, (metric: Metric) => metric.agent)
   metrics!: Metric[];
+
+  @OneToMany(() => AgentToken, (token) => token.agent)
+  tokens!: AgentToken[];
 
   @ManyToOne(() => User, (user: User) => user.agents, {
     nullable: false,

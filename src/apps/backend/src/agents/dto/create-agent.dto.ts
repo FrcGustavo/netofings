@@ -1,8 +1,7 @@
 export class CreateAgentDto {
-  uuid!: string;
+  // uuid!: string;
   username!: string;
-  name!: string;
-  hostname!: string;
-  pid!: number;
-  connected?: boolean;
+  // hostname!: string;
+  // pid!: number;
+  // connected?: boolean;
 }
