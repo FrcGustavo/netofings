@@ -1,87 +1,69 @@
 # Netofings
 
-Monorepo de Netofings, evolucionado desde el proyecto original del curso [Advanced Node.js Course](https://platzi.com/clases/nodejs/) de Platzi.
+Netofings monitors agents through a web dashboard, API, and terminal client. Each unit manages its own dependencies with npm. Make coordinates local development and builds.
 
-## Estructura refactorizada
+## Repository layout
 
-El código nuevo vive dentro de `src/` usando workspaces de npm y Turbo.
+| Path | Responsibility | npm package |
+| --- | --- | --- |
+| `apps/frontend/` | React and Vite dashboard | `frontend` |
+| `apps/cli/` | Terminal monitoring application | `@netofings/cli` |
+| `services/backend/` | NestJS API, broker, persistence, and database migrations | `backend` |
+| `clients/agent/` | Metric publishing client used by the CLI and external consumers | `@netofings/agent` |
 
-### Apps (`src/apps`)
+Repository guidance follows the root, layer, and unit `AGENTS.md` files. Each unit owns its source, tests, dependencies, and configuration. Add shared infrastructure or finite jobs only when there is an actual shared resource or standalone process; backend database migrations remain with `services/backend/`.
 
-- `backend` (`src/apps/backend`): API y servicios en NestJS.
-- `frontend` (`src/apps/frontend`): dashboard web en React + Vite.
+## Requirements
 
-### Packages (`src/packages`)
+- Make and Docker with Compose 2.24 or later for the containerized environment
+- Node.js 24 and npm 11 for host-side builds and checks
 
-- `@netofings/agent` (`src/packages/agent`): cliente/agente que recolecta y publica métricas.
-- `@netofings/cli` (`src/packages/cli`): CLI para monitoreo en terminal.
-
-## Proyectos legacy (compatibilidad)
-
-Estos folders siguen en el repo como referencia o compatibilidad mientras se completa la migración:
-
-- `netofingsagent/`
-- `netofingsapi/`
-- `netofingsCli/`
-- `netofingsdb/`
-- `netofingsmqtt/`
-- `netofingsWeb/`
-
-## Requisitos
-
-- Node.js 20+
-- npm 11+
-- Docker (opcional, para infraestructura local)
-
-## Instalación
+## Development
 
 ```bash
-npm install
+make up
 ```
 
-## Comandos del monorepo
+Open the dashboard at `http://localhost:5173`. The API is available at `http://localhost:3000/api`, MQTT at `mqtt://localhost:1883`, and pgAdmin at `http://localhost:5050`. Compose starts PostgreSQL and applies the backend migrations before starting the API. `make ps` shows the running services, `make logs` follows their logs, and `make down` removes the containers while preserving database volumes.
 
-Desde la raíz del proyecto:
+Start a unit and its dependencies independently:
 
 ```bash
-npm run build
-npm run dev
-npm run lint
-npm run test
+make backend                  # API, MQTT broker, migrations, and PostgreSQL
+make frontend                 # Dashboard plus the backend and its dependencies
+make -C services/backend up    # Same as make backend, from the unit Makefile
+make -C apps/frontend up      # Same as make frontend, from the unit Makefile
 ```
 
-Estos scripts ejecutan tareas sobre workspaces usando Turbo (`turbo.json`).
-
-## Comandos por proyecto
-
-### Backend
+The interactive CLI and agent example use separate containers on demand. Export `NETOFINGS_AGENT_TOKEN` with a token created in the dashboard before running the monitor or publishing metrics. The agent example measures the container where it runs.
 
 ```bash
-npm run start:dev --workspace=backend
-npm run test --workspace=backend
+make cli ARGS='--help'
+make cli ARGS='monitor'
+make agent-example
 ```
 
-### Frontend
+The unit equivalents are `make -C apps/cli up ARGS='monitor'` and `make -C clients/agent up`. Compose uses local development defaults, with optional `.db.env`, `.pgadmin.env`, and `.redis.env` overrides from the repository root and `services/backend/.env` for API settings. Use the same PostgreSQL credentials as your existing volume if you reuse one. Each unit also exposes its host-side commands through its Makefile.
+
+## Build and checks
+
+From the repository root:
 
 ```bash
-npm run dev --workspace=frontend
-npm run build --workspace=frontend
+make install
+make build
+make lint
+make test
 ```
 
-### Agent package
+Use `make -C services/backend test` or `make -C apps/cli test` to run a single test suite. The CLI Makefile builds the local agent package before it builds the CLI. Run `make help` for the available root targets.
+
+## Container build
+
+The production image builds the frontend and backend with their respective lockfiles. The Makefile calls `services/backend/Dockerfile` with the repository root as the build context:
 
 ```bash
-npm run build --workspace=@netofings/agent
-npm run example --workspace=@netofings/agent
+make image IMAGE=netofings
 ```
 
-### CLI package
-
-```bash
-npm run build --workspace=@netofings/cli
-npm run dev --workspace=@netofings/cli
-```
-
-## Infra local
-
-Existe `docker-compose.yml` en la raíz para levantar dependencias locales (por ejemplo broker, base de datos y servicios auxiliares) según tu flujo.
+The backend serves the built frontend in the combined image. Run database migrations with `make -C services/backend migrations-run`.
