@@ -1,9 +1,19 @@
+export type AgentToken = {
+  id: string
+  token: string
+  revoked: boolean
+  createdAt: string
+  descripcion?: string
+}
+
 export type Agent = {
   id?: string
   uuid?: string
+  username: string
   name: string
   hostname: string
   connected: boolean
+  tokens?: AgentToken[]
 }
 
 export type Metric = {

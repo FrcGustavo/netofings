@@ -1,12 +1,14 @@
 import { Injectable, OnModuleInit, Logger } from '@nestjs/common';
 import { Aedes } from 'aedes';
+import type { AuthenticateError } from 'aedes';
 import { createServer } from 'net';
 import { AgentsService } from '../agents/agents.service';
 import { MetricsService } from '../metrics/metrics.service';
-import { UsersService } from '../users/users.service';
+import { TokensService } from '../tokens/tokens.service';
+import { User } from '../users/entities/user.entity';
 
 interface AgentPayload {
-  id: string;
+  id?: string;
   username: string;
   name: string;
   hostname: string;
@@ -24,28 +26,92 @@ interface AgentMessagePayload {
   timestamp?: number;
 }
 
+type AuthenticatedAgentContext = {
+  agentId: string;
+  userId: string;
+  username: string;
+};
+
+type AuthenticateCallback = Parameters<NonNullable<Aedes['authenticate']>>[3];
+type AuthenticatePassword = Parameters<NonNullable<Aedes['authenticate']>>[2];
+
 @Injectable()
 export class BrokerService implements OnModuleInit {
   private readonly logger = new Logger(BrokerService.name);
   private aedes!: Aedes;
   private readonly clients = new Map<string, string>();
+  private readonly authenticatedAgents = new Map<
+    string,
+    AuthenticatedAgentContext
+  >();
 
   constructor(
     private readonly agentsService: AgentsService,
     private readonly metricsService: MetricsService,
-    private readonly usersService: UsersService,
+    private readonly tokensService: TokensService,
   ) {}
 
   async onModuleInit() {
     const port = 1883;
     this.aedes = await Aedes.createBroker();
+    this.aedes.authenticate = this.authenticateClient;
     const server = createServer(this.aedes.handle);
-
     server.listen(port, () => {
       this.logger.log(`MQTT broker listening on port ${port}`);
     });
 
     this.setupBrokerEvents();
+  }
+
+  private readonly authenticateClient: NonNullable<Aedes['authenticate']> = (
+    client,
+    _username,
+    password,
+    callback,
+  ) => {
+    void this.runAuthentication(client.id, password, callback);
+  };
+
+  private async runAuthentication(
+    clientId: string,
+    password: AuthenticatePassword,
+    callback: AuthenticateCallback,
+  ) {
+    try {
+      const token = this.extractToken(password);
+      if (!token) {
+        return callback(this.createAuthError('No token provided'), false);
+      }
+
+      const agentToken = await this.tokensService.findByToken(token);
+      if (!agentToken || !agentToken.agent?.user) {
+        return callback(this.createAuthError('Invalid token'), false);
+      }
+
+      this.authenticatedAgents.set(clientId, {
+        agentId: agentToken.agent.id,
+        userId: agentToken.agent.user.id,
+        username: agentToken.agent.username,
+      });
+
+      callback(null, true);
+    } catch {
+      callback(this.createAuthError('Authentication error'), false);
+    }
+  }
+
+  private extractToken(password: AuthenticatePassword) {
+    if (!password) {
+      return null;
+    }
+
+    return password.toString('utf8');
+  }
+
+  private createAuthError(message: string): AuthenticateError {
+    const error = new Error(message) as AuthenticateError;
+    error.returnCode = 4 as AuthenticateError['returnCode'];
+    return error;
   }
 
   private setupBrokerEvents() {
@@ -81,6 +147,7 @@ export class BrokerService implements OnModuleInit {
     }
 
     this.clients.delete(client.id);
+    this.authenticatedAgents.delete(client.id);
   }
 
   private async handleAgentMessage(
@@ -92,18 +159,33 @@ export class BrokerService implements OnModuleInit {
         return;
       }
 
+      const authenticatedAgent = this.authenticatedAgents.get(client.id);
+      if (!authenticatedAgent) {
+        this.logger.warn(
+          `Missing authenticated agent context for client ${client.id}`,
+        );
+        return;
+      }
+
       const payload = this.parsePayload(packet.payload);
       if (!payload) {
         return;
       }
 
-      /**
-       * For simplicity, we're using a single "mqtt-system" user for all MQTT agents.
-       * In a real application, you might want to implement a more robust authentication and user management system.
-       */
-      const user = await this.usersService.findOrCreateByName('mqtt-system');
+      if (payload.agent.id && payload.agent.id !== authenticatedAgent.agentId) {
+        this.logger.warn(
+          `Client ${client.id} published for agent ${payload.agent.id} but token is bound to ${authenticatedAgent.agentId}; using authenticated agent id`,
+        );
+      }
+
+      const user = { id: authenticatedAgent.userId } as User;
+
       const agent = await this.agentsService.upsertFromMqtt(
-        payload.agent,
+        {
+          ...payload.agent,
+          id: authenticatedAgent.agentId,
+          username: authenticatedAgent.username,
+        },
         user,
       );
 
@@ -141,7 +223,7 @@ export class BrokerService implements OnModuleInit {
         typeof payload === 'string' ? payload : payload.toString('utf8');
       const parsed = JSON.parse(raw) as AgentMessagePayload;
       if (
-        !parsed?.agent?.id ||
+        !parsed?.agent ||
         !parsed.agent.username ||
         !parsed.agent.name ||
         !parsed.agent.hostname ||

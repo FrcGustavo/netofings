@@ -22,17 +22,17 @@ npm install @netofings/agent
 ## Quick example
 
 ```ts
-import NetofingsAgent from '@netofings/agent';
+import NetofingsAgent from "@netofings/agent";
 
 const agent = new NetofingsAgent({
-	id: 'my-agent-id',
-	username: 'my-user',
-	name: 'My Agent',
-	interval: 5000,
-	host: 'mqtt://localhost',
+  username: "my-user",
+  token: process.env.NETOFINGS_AGENT_TOKEN!,
+  name: "My Agent",
+  interval: 5000,
+  host: "mqtt://localhost:1883",
 });
 
-agent.addMetric('cpu', () => 12.3);
+agent.addMetric("cpu", () => 12.3);
 agent.connect();
 ```
 
@@ -47,6 +47,7 @@ The example at `examples/index.ts` publishes:
 Run it with:
 
 ```bash
+export NETOFINGS_AGENT_TOKEN=your-agent-token
 npm run example --workspace=@netofings/agent
 ```
 
@@ -63,3 +64,4 @@ npm run example --workspace=@netofings/agent
 
 - Package format is ESM.
 - Main entrypoint is `dist/index.js`.
+- The MQTT broker now requires an agent token and the package sends it as the MQTT password.

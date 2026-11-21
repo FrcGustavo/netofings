@@ -7,10 +7,13 @@ import {
   Chip,
   Collapse,
   Typography,
+  IconButton,
+  Tooltip
 } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
 import { AgentMetricsPanel } from './AgentMetricsPanel'
-import type { Agent } from '../types/domain'
+import SettingsIcon from '@mui/icons-material/Settings';
+import type { Agent } from '../../../types/domain'
 
 type AgentCardProps = {
   agent: Agent
@@ -34,19 +37,30 @@ export function AgentCard({ agent }: AgentCardProps) {
           <Box>
             <Typography variant="h6">{agent.name}</Typography>
             <Typography color="text.secondary" variant="body2">
-              {agent.hostname}
+              {agent.username}
             </Typography>
             <Typography color="text.secondary" variant="caption">
               {agentId}
             </Typography>
           </Box>
 
-          <Chip
-            color={agent.connected ? 'success' : 'default'}
-            label={agent.connected ? 'Online' : 'Offline'}
-            size="small"
-            variant={agent.connected ? 'filled' : 'outlined'}
-          />
+          <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1 }}>
+            <Chip
+              color={agent.connected ? 'success' : 'default'}
+              label={agent.connected ? 'Online' : 'Offline'}
+              size="small"
+              variant={agent.connected ? 'filled' : 'outlined'}
+            />
+            <Tooltip title="Agent Settings">
+              <IconButton 
+                size="small" 
+                onClick={() => navigate(`/agents/${agentId}/config`)}
+                sx={{ mt: -0.5, mr: -0.5 }}
+              >
+                <SettingsIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
+          </Box>
         </Box>
 
         <Button

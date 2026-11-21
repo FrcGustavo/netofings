@@ -1,12 +1,16 @@
 import { Module } from '@nestjs/common';
+import { ServeStaticModule } from '@nestjs/serve-static';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigType } from '@nestjs/config';
+import { join } from 'path';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { BrokerModule } from './broker/broker.module';
 import { UsersModule } from './users/users.module';
 import { AgentsModule } from './agents/agents.module';
 import { MetricsModule } from './metrics/metrics.module';
+import { AuthModule } from './auth/auth.module';
+import { TokensModule } from './tokens/tokens.module';
 import config from './config';
 
 @Module({
@@ -29,10 +33,16 @@ import config from './config';
         autoLoadEntities: true,
       }),
     }),
+    ServeStaticModule.forRoot({
+      renderPath: '/{*path}',
+      rootPath: join(__dirname, '..', 'frontend', 'dist'),
+    }),
+    AuthModule,
     BrokerModule,
     UsersModule,
     AgentsModule,
     MetricsModule,
+    TokensModule,
   ],
   controllers: [AppController],
   providers: [AppService],

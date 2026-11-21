@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
-import { getAgents } from '../lib/api'
-import { queryKeys } from '../lib/queryKeys'
+import { getAgents } from '../../../lib/api'
+import { queryKeys } from '../../../lib/queryKeys'
 
 export function useAgents() {
   return useQuery({
