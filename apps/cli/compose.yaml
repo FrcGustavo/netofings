@@ -1,0 +1,13 @@
+services:
+  cli:
+    profiles: [tools]
+    build:
+      context: ../..
+      dockerfile: apps/cli/Dockerfile
+      target: cli
+    environment:
+      NETOFINGS_MQTT_HOST: mqtt://backend:1883
+      NETOFINGS_AGENT_TOKEN:
+    depends_on:
+      backend:
+        condition: service_healthy
