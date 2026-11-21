@@ -1,0 +1,13 @@
+services:
+  agent-example:
+    profiles: [tools]
+    build:
+      context: ../..
+      dockerfile: apps/cli/Dockerfile
+      target: agent
+    environment:
+      NETOFINGS_MQTT_HOST: mqtt://backend:1883
+      NETOFINGS_AGENT_TOKEN:
+    depends_on:
+      backend:
+        condition: service_healthy
