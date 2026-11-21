@@ -1,11 +1,17 @@
-# .git
-# .turbo
-# node_modules
-# **/node_modules
-# **/dist
-# **/coverage
-# .env
-# .db.env
-# .pgadmin.env
-# .redis.env
-# npm-debug.log*
+.git
+.agents
+.codex
+.aws
+node_modules
+**/node_modules
+**/dist
+**/coverage
+.env
+.env.*
+.db.env
+.pgadmin.env
+.redis.env
+**/.env
+**/.env.*
+*.log
+npm-debug.log*
