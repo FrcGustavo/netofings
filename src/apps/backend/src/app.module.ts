@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
+import { ServeStaticModule } from '@nestjs/serve-static';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigType } from '@nestjs/config';
+import { join } from 'path';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { BrokerModule } from './broker/broker.module';
@@ -30,6 +32,10 @@ import config from './config';
         synchronize: false,
         autoLoadEntities: true,
       }),
+    }),
+    ServeStaticModule.forRoot({
+      renderPath: '/{*path}',
+      rootPath: join(__dirname, '..', 'frontend', 'dist'),
     }),
     AuthModule,
     BrokerModule,
