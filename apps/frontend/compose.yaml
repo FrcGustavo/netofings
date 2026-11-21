@@ -1,0 +1,22 @@
+services:
+  frontend:
+    build:
+      context: ../..
+      dockerfile: services/backend/Dockerfile
+      target: frontend-development
+    command: npm run dev -- --host 0.0.0.0 --strictPort
+    environment:
+      VITE_API_PROXY_TARGET: http://backend:3000
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - '127.0.0.1:${FRONTEND_HOST_PORT:-5173}:5173'
+    volumes:
+      - ./src:/app/apps/frontend/src
+      - ./public:/app/apps/frontend/public
+    healthcheck:
+      test: ['CMD', 'node', '-e', 'fetch("http://127.0.0.1:5173/").then(response => { if (!response.ok) process.exitCode = 1 }).catch(() => { process.exitCode = 1 })']
+      interval: 3s
+      timeout: 3s
+      retries: 20
